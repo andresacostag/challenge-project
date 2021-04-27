@@ -1,0 +1,32 @@
+## Ejecutar challenge-project
+    1. Clonar el proyecto con el comando  git clone https://github.com/andresacostag/challenge-project.git
+    2. Abrir una consola y dirigirse al directorio raíz del proyecto
+    3. Ejecutar el comando cd /ipanalyzer
+    4. Ejecutar el comando mvn clean package y esperar a que finalice
+    5. Ejecutar el comando cd.. o cd .. (en Linux)
+    6. Ejecutar el comando cd /ipanalyzer-eureka-server
+    7. Ejecutar el comando mvn clean package y esperar a que finalice
+    8. Ejecutar el comando cd.. o cd .. (en Linux)
+    9. Ejecutar el comando cd /ipanalyzer-ribbon-server
+    10. Ejecutar el comando mvn clean package y esperar a que finalice
+    11. Ejecutar el comando cd.. o cd .. (en Linux)
+    12. Ejecutar el comando docker-compose build y esperar a que finalice
+    13. Ejecutar el comando docker-compose up y esperar a que finalice
+    14. Esperar 20 segundos
+    15. Se usa un service-discovery server para suscribir los nodos y el ribbon-server, y este último para balancear los llamados al servicio
+    15. Ejecutar el comando curl http://localhost:8888/client/ipaddress?ip=5.6.7.8 o generar una request de tipo Get en postman con la url
+        La ejecución de esta request se encuentra balanceada y llega a un servidor ribbon que es el encargado de balancear las cargas entre los nodos del microservicio de consulta de ip
+        - Servidor con puerto 8888 es balanceado
+        - Servidores con puerto 9090 o 9091 son los nodos
+    16. Validar la respuesta que debe ser de la siguiente manera{"ipAddress":"5.6.7.8","country":"Germany","localCurrency":"Euro","localCurrencyCode":"EUR","exchangeRateEUR":1.0,"isocode":"DE"}
+    17. Para probar la funcionalidad de lista negra de ip ejecutar el siguiente comando cambiando el parámetro ipAddress con la ip que se desea poner en lista negra
+        curl --location --request POST 'http://localhost:8888/client/blacklistedipaddress/' --header 'Content-Type: application/json' --data-raw '{
+            "ipAddress":"192.168.0.1"
+        }'
+        o generar una request de tipo Get en postman con la url y añadiendo un objeto de tipo json como se ve a continuación {"ipAddress":"192.168.0.1"}
+    18. Ejecutar el comando curl http://localhost:8888/client/ipaddress?ip=5.6.7.8 desde el equipo con la ip bloqueada y revisar que la respuesta de un error 403 Forbidden
+    19. Si se desea sacar la ip de la lista negra se debe ejecutar el comando curl http://localhost:9090/blacklistedipaddress/1 o el id de la ip a borrar, en caso de no conocer el id de la ip
+        ejecutar el siguiente comando http://localhost:9090/blacklistedipaddress/all que traerá todas las ip en lista negra con su respectivo id
+
+
+
